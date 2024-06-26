@@ -1,6 +1,16 @@
-export function renderPhotosList(photos, galleryList) {
-  const markup = photos.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
-    return `<li class="search-list-item">
+export const returnMarkup = arrSearchPhotos => {
+  const markup = arrSearchPhotos
+    .map(
+      ({
+        webformatURL,
+        largeImageURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => {
+        return `<li class="search-list-item">
                     <a class="gallery-link" href="${largeImageURL}">
                       <img class="search-list-img" src="${webformatURL}" alt="${tags}" />
                     </a>
@@ -23,6 +33,8 @@ export function renderPhotosList(photos, galleryList) {
                       </li>
                     </ul>
                   </li>`;
-  }).join('');
-  galleryList.insertAdjacentHTML('beforeend', markup);
-}
+      }
+    )
+    .join('');
+  return markup;
+};

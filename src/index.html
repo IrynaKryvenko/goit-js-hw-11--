@@ -1,32 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://pixabay.com;">
-  <title>Vanilla App Template</title>
-  <link rel="stylesheet" href="./css/styles.css" />
-</head>
-<body>
-  <form class="search-form" id="search-form">
-    <input
-      type="text"
-      name="searchQuery"
-      autocomplete="off"
-      placeholder="Search images..."
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Images</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css"
     />
-    <button type="submit">Search</button>
-  </form>
-
-  <div class="gallery">
-    <!-- Картки зображень будуть додаватися тут -->
-  </div>
-
-  <button type="button" class="load-more">Load more</button>
-
-  <div class="loader"></div>
-
-  <script type="module" src="./main.js"></script>
-</body>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <section class="search">
+      <div class="container">
+        <form class="search-form js-search-form">
+          <input
+            name="enterForSearsh"
+            type="text"
+            placeholder="Search images..."
+            required
+          />
+          <button type="submit">Search</button>
+        </form>
+        <span class="loader js-loader"></span>
+        <ul class="search-list js-search-list"></ul>
+        <div class="wrap-more">
+          <span class="loader js-loader-more"></span>
+          <button class="search-more js-search-more" type="button">
+            Load more
+          </button>
+        </div>
+      </div>
+    </section>
+    <script type="module" src="./main.js"></script>
+  </body>
 </html>
