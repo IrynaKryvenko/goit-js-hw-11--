@@ -1,35 +1,33 @@
-import './css/styles.css';
-import { getPhotos } from './js/apiService';
-import { renderPhotosList } from './js/renderPhotosList';
+import axios from 'axios';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import { getPhotos, renderPhotosList } from './js/apiService';
+import { generateGallery } from './js/renderPhotosList';
 
 const searchForm = document.querySelector('.search-form');
-const searchList = document.querySelector('.js-search-list');
-const loader = document.querySelector('.js-loader');
-const loadMoreLoader = document.querySelector('.js-load-more-loader');
-const loadMoreBtn = document.querySelector('.js-load-more-btn');
+const gallery = document.querySelector('.gallery');
+const loader = document.querySelector('.loader');
+const loadMoreBtn = document.querySelector('.load-more');
 
 let currentPage = 1;
+let totalPages = 1;
 let currentQuery = '';
 
-searchForm.addEventListener('submit', async event => {
+searchForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  currentQuery = searchForm.elements.enterForSearch.value.trim();
+  currentQuery = searchForm.elements.searchQuery.value.trim();
   if (!currentQuery) return;
-  if (loadMoreBtn.classList.contains('active')) {
-    loadMoreBtn.classList.remove('active');
-  }
-  searchList.innerHTML = '';
+  loadMoreBtn.classList.remove('active');
+  gallery.innerHTML = '';
   loader.classList.add('active');
   currentPage = 1;
 
   try {
     const { data } = await getPhotos(currentQuery, currentPage);
-    if (!data.totalHits) {
+    if (!data.total) {
       loader.classList.remove('active');
       iziToast.error({
         title: 'Error',
@@ -40,7 +38,7 @@ searchForm.addEventListener('submit', async event => {
       return;
     }
 
-    renderPhotosList(data.hits, searchList);
+    gallery.innerHTML = generateGallery(data.hits);
     loader.classList.remove('active');
     loadMoreBtn.classList.add('active');
 
@@ -65,23 +63,26 @@ searchForm.addEventListener('submit', async event => {
 });
 
 loadMoreBtn.addEventListener('click', async () => {
-  loadMoreLoader.classList.add('active');
+  const loadMoreLoader = document.createElement('div');
+  loadMoreLoader.classList.add('loader-more');
+  loadMoreBtn.insertAdjacentElement('afterend', loadMoreLoader);
   loadMoreBtn.classList.remove('active');
 
   try {
     const { data } = await getPhotos(currentQuery, ++currentPage);
-    renderPhotosList(data.hits, searchList);
+    gallery.insertAdjacentHTML('beforeend', generateGallery(data.hits));
 
-    loadMoreLoader.classList.remove('active');
+    loadMoreLoader.remove();
     loadMoreBtn.classList.add('active');
     lightbox.refresh();
 
     window.scrollBy({
-      top: searchList.firstChild.getBoundingClientRect().height * 2,
+      top: gallery.firstChild.getBoundingClientRect().height * 2,
       behavior: 'smooth',
     });
 
-    if (currentPage * 15 >= data.totalHits) {
+    totalPages = Math.ceil(data.totalHits / 15);
+    if (totalPages === currentPage) {
       loadMoreBtn.classList.remove('active');
       iziToast.info({
         title: 'Info',
@@ -91,7 +92,7 @@ loadMoreBtn.addEventListener('click', async () => {
     }
   } catch (error) {
     console.log(error);
-    loadMoreLoader.classList.remove('active');
+    loadMoreLoader.remove();
     iziToast.error({
       title: 'Error',
       message: 'Failed to load more images. Please try again later.',
@@ -104,3 +105,4 @@ const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
+
