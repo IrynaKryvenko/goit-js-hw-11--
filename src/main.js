@@ -96,4 +96,7 @@ loadMoreBtn.addEventListener('click', async () => {
   }
 });
 
-const lightbox = new SimpleLightbox('.gallery a', { captionsData: 'alt' });
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
