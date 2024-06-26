@@ -1,18 +1,28 @@
 export function renderPhotosList(photos, galleryList) {
   const markup = photos.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
-    return `
-      <div class="photo-card">
-        <a href="${largeImageURL}">
-          <img src="${webformatURL}" alt="${tags}" loading="lazy" max-width="400px" />
-        </a>
-        <div class="info">
-          <p class="info-item"><b>Likes</b><br>${likes}</p>
-          <p class="info-item"><b>Views</b><br>${views}</p>
-          <p class="info-item"><b>Comments</b><br>${comments}</p>
-          <p class="info-item"><b>Downloads</b><br>${downloads}</p>
-        </div>
-      </div>
-    `;
+    return `<li class="search-list-item">
+                    <a class="gallery-link" href="${largeImageURL}">
+                      <img class="search-list-img" src="${webformatURL}" alt="${tags}" />
+                    </a>
+                    <ul>
+                      <li>
+                        <h3>Likes</h3>
+                        <p>${likes}</p>
+                      </li>
+                      <li>
+                        <h3>Views</h3>
+                        <p>${views}</p>
+                      </li>
+                      <li>
+                        <h3>Comments</h3>
+                        <p>${comments}</p>
+                      </li>
+                      <li>
+                        <h3>Downloads</h3>
+                        <p>${downloads}</p>
+                      </li>
+                    </ul>
+                  </li>`;
   }).join('');
   galleryList.insertAdjacentHTML('beforeend', markup);
 }
