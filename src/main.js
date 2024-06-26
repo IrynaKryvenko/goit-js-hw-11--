@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    currentQuery = searchForm.elements.searchQuery.value.trim();
+    currentQuery = searchForm.elements.searchInput.value.trim();
     if (!currentQuery) return;
     loadMoreBtn.classList.remove('active');
     gallery.innerHTML = '';
@@ -61,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
-
   loadMoreBtn.addEventListener('click', async () => {
     const loadMoreLoader = document.createElement('div');
     loadMoreLoader.classList.add('loader-more');
