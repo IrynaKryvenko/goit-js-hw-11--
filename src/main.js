@@ -1,9 +1,7 @@
+// main.js
 import { getPhotos } from './js/pixabay-api';
 import { renderPhotosList } from './js/render-functions';
 import iziToast from 'izitoast';
-import 'izitoast/dist/css/iziToast.min.css';
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const searchForm = document.querySelector('.search-form');
 const galleryList = document.querySelector('.gallery');
@@ -20,7 +18,14 @@ searchForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   searchQuery = searchForm.elements.searchQuery.value.trim();
 
-  if (!searchQuery) return;
+  if (!searchQuery) {
+    iziToast.warning({
+      title: 'Warning',
+      message: 'Please enter a search query.',
+      position: 'topRight',
+    });
+    return;
+  }
 
   galleryList.innerHTML = '';
   page = 1;
