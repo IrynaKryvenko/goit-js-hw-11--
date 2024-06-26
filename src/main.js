@@ -1,5 +1,6 @@
 import './css/styles.css';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { renderPhotosList } from './js/renderPhotosList';
@@ -41,21 +42,32 @@ function onLoadPhotos() {
       const totalHits = array.totalHits;
 
       if (total === 0) {
-        Notify.warning('Sorry, there are no images matching your search query.');
+         iziToast.warning({
+        title: 'Warning',
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
+      });
       } else if (total >= totalHits) {
-        Notify.warning('You have reached the end of the search results.');
+         iziToast.error({
+      title: 'Error',
+      message: 'You have reached the end of the search results.',
+    });
       } else {
         loadMoreBtn.style.removeProperty('display'); 
         forScrollPage();
         if (page === 2) {
-          Notify.success(`Hooray! We found ${totalHits} images.`);
+          iziToast.success({
+    title: 'Hooray!',
+    message: `We found ${totalHits} images.`,
+});
         }
       }
     })
     .catch((error) => {
-      Notify.failure(
-        'Sorry, there was an error retrieving images. Please try again.'
-      );
+       iziToast.error({
+      title: 'Error',
+      message: 'Failed to fetch images. Please try again later.',
+    });
     });
   page += 1;
 }
