@@ -6,14 +6,13 @@ import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-const searchForm = document.querySelector('.js-search-form');
+const searchForm = document.querySelector('.search-form');
 const searchList = document.querySelector('.js-search-list');
 const loader = document.querySelector('.js-loader');
 const loadMoreLoader = document.querySelector('.js-load-more-loader');
 const loadMoreBtn = document.querySelector('.js-load-more-btn');
 
 let currentPage = 1;
-let totalPages = 1;
 let currentQuery = '';
 
 searchForm.addEventListener('submit', async event => {
@@ -29,8 +28,8 @@ searchForm.addEventListener('submit', async event => {
   currentPage = 1;
 
   try {
-    const { data } = await loadImages(currentQuery, currentPage);
-    if (!data.total) {
+    const { data } = await getPhotos(currentQuery, currentPage);
+    if (!data.totalHits) {
       loader.classList.remove('active');
       iziToast.error({
         title: 'Error',
@@ -41,7 +40,7 @@ searchForm.addEventListener('submit', async event => {
       return;
     }
 
-    searchList.innerHTML = `${generateGallery(data.hits)}`;
+    renderPhotosList(data.hits, searchList);
     loader.classList.remove('active');
     loadMoreBtn.classList.add('active');
 
@@ -70,8 +69,8 @@ loadMoreBtn.addEventListener('click', async () => {
   loadMoreBtn.classList.remove('active');
 
   try {
-    const { data } = await loadImages(currentQuery, ++currentPage);
-    searchList.insertAdjacentHTML('beforeend', `${generateGallery(data.hits)}`);
+    const { data } = await getPhotos(currentQuery, ++currentPage);
+    renderPhotosList(data.hits, searchList);
 
     loadMoreLoader.classList.remove('active');
     loadMoreBtn.classList.add('active');
@@ -82,8 +81,7 @@ loadMoreBtn.addEventListener('click', async () => {
       behavior: 'smooth',
     });
 
-    totalPages = Math.ceil(data.totalHits / 15);
-    if (totalPages === currentPage) {
+    if (currentPage * 15 >= data.totalHits) {
       loadMoreBtn.classList.remove('active');
       iziToast.info({
         title: 'Info',
@@ -102,7 +100,7 @@ loadMoreBtn.addEventListener('click', async () => {
   }
 });
 
-const lightbox = new SimpleLightbox('.gallery-link', {
+const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
