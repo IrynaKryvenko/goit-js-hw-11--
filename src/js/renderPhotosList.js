@@ -1,31 +1,14 @@
-export function createMarkup(data) {
-    return data.hits
-    .map(
-        el => 
-        `<div class="gallery-item>
-        <a class="gallery-link" href="${el.largeImageURL}">
-                  <img class="image" src="${el.webformatURL}" alt="${el.tags}" />
-        </a>
-        <div class="gallery-item-info">
-                  <p class="gallery-info">
-                      <span class="item-info">Likes: <span class ="span">${el.likes}</span></span>    
-                  </p>
-                  <p class="gallery-info">
-                      <span class="item-info">Views: <span class ="span">${el.views}</span></span>    
-                  </p>
-                  <p class="gallery-info">
-                      <span class="item-info">Comments: <span class ="span">${el.comments}</span></span>    
-                  </p>
-                  <p class="gallery-info">
-                      <span class="item-info">Downloads: <span class ="span">${el.downloads}</span></span>    
-                  </p>
-              </div>
-          </div>
-    </div>`
-      )
-    .join('');
+export function loadGallery(data) {
+  const markup = data.hits.map(data => {
+    return `<li class="gallery-item">
+        <a href="${data.largeImageURL}"><img src="${data.webformatURL}" alt="${data.tags}" class="gallery-image" /></a>
+        <div class="gallery-wrap">
+        <p><b>Likes</b><br />${data.likes}</p>
+        <p><b>Views</b><br />${data.views}</p>
+        <p><b>Comments</b><br />${data.comments}</p>
+        <p><b>Downloads</b><br />${data.downloads}</p>
+        </div>
+      </li>`;
+  });
+  return markup.join('');
 }
-  
-  
-  
-  
