@@ -2,29 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./css/reset.css" />
-    <link rel="stylesheet" href="./css/index.css" />
-    <title>Document</title>
+    <title>Vanilla App Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,700&display=swap"
+    rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
-    <form class="form-search" autocomplete="off">
-      <label class="label">
-        <input
-          type="search"
-          name="search"
-          class="input"
-          autofocus
-          placeholder="Search images..."
-        />
-      </label>
-      <button type="submit" class="btn">Submit</button>
+    
+    <form class="search-form">
+      <input
+      type="text"
+      name="searchWord"
+      class="search-input"
+      placeholder="Search images..."
+      />
+      <button class="submit-btn" type="submit">Search</button>
     </form>
 
-    <ul class="image-list"></ul>
+  <span class="loader"></span>
 
-    <button type="button" class="load-more hidden">Load more</button>
+  <div class="gallery"></div>
+  <div class="loading-text" style="display: none;">Please wait...</div>
+    <button class="load-btn" type="button" data-action="load-button">
+      <span class="label">Load more</span>
+    </button>
 
-    <script src="./main.js" type="module"></script>
+    <script type="module" src="./main.js"></script>
   </body>
 </html>
