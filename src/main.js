@@ -6,11 +6,11 @@ import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-import { imgPix } from './js/pixabay-api';
+import { imgPix } from './js/apiService';
 
 import icon from './img/x-icon.svg';
 
-import { renderImages } from './js/render-functions';
+import { renderImages } from './js/renderPhotosList';
 
 const refs = {
   searchForm: document.querySelector('.form'),

@@ -5,7 +5,7 @@ import axios from 'axios';
 export async function imgPix(query, currentPage) {
   const BASE_URL = 'https://pixabay.com';
   const END_POINT = '/api/?key=';
-  const API_KEY = '42433869-1e5be4b754d1019adc877ba0e';
+  const API_KEY = '36655990-0724db180fb71d9be8c2c1bf3';
 
   const url = `${BASE_URL}${END_POINT}${API_KEY}`;
 
