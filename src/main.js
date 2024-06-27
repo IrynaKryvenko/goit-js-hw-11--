@@ -1,121 +1,146 @@
+'use strict';
+
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-import { getPhotoByKeyword } from './js/apiService.js';
-import { loadGallery } from './js/renderPhotosList.js';
+import { imgPix } from './js/pixabay-api';
 
-export let curPage;
+import icon from './img/x-icon.svg';
+
+import { renderImages } from './js/render-functions';
 
 const refs = {
-  formRef: document.querySelector('.form'),
-  formInputRef: document.querySelector('.form-input'),
-  galleryRef: document.querySelector('.gallery'),
-  loaderRef: document.querySelector('.loader'),
-  loadMoreBtnRef: document.querySelector('.load-more-btn'),
-  upBtnRef: document.querySelector('.up-btn'),
+  searchForm: document.querySelector('.form'),
+  loadDiv: document.querySelector('.loader'),
+  loadMorePictures: document.querySelector('.load-morepics'),
+  userKeyWordInput: document.querySelector('.data-userInput'),
+  containerForImages: document.querySelector('.container-imgs'),
 };
 
-const lightboxOptions = {
-  captionDelay: 250,
+const lightbox = new SimpleLightbox('.container-img-wrap a', {
+  close: true,
   captionsData: 'alt',
-};
+  captionDelay: 50,
+  captionsPosition: 'bottom',
+  animationSpeed: 1,
+  captionSelector: 'img',
+  loop: true,
+});
 
-let userValue;
-const lightbox = new SimpleLightbox('.gallery a', lightboxOptions);
+let page;
+let maxPages;
+let userKeyWord;
 
-refs.formRef.addEventListener('submit', e => {
-  curPage = 1;
+refs.searchForm.addEventListener('submit', onSubmit);
+
+refs.loadMorePictures.addEventListener('click', loadMore);
+
+async function onSubmit(e) {
   e.preventDefault();
-  refs.galleryRef.innerHTML = '';
-  refs.loaderRef.classList.remove('hide');
-  refs.loadMoreBtnRef.classList.add('hide');
-
-  userValue = refs.formInputRef.value;
-
-  if (userValue.trim() === '') {
-    refs.formRef.reset();
-    refs.loaderRef.classList.add('hide');
-  } else {
-    getPhotoByKeyword(userValue)
-      .then(data => {
-        refs.formRef.reset();
-        if (data.totalHits > 15) {
-          refs.loadMoreBtnRef.classList.remove('hide');
-          refs.upBtnRef.classList.remove('hide');
-        }
-        if (data.hits.length === 0) {
-          iziToast.error({
-            message:
-              'Sorry, there are no images matching your search query. Please, try again!',
-            messageColor: 'white',
-            backgroundColor: 'red',
-            position: 'topRight',
-            maxWidth: 432,
-          });
-        }
-
-        refs.galleryRef.innerHTML = loadGallery(data);
-
-        lightbox.on('show.simplelightbox');
-        lightbox.refresh();
-      })
-      .catch(err =>
-        iziToast.error({
-          message: err.message,
-          position: 'topRight',
-          maxWidth: 432,
-        })
-      )
-      .finally(() => {
-        refs.loaderRef.classList.add('hide');
-      });
+  userKeyWord = refs.userKeyWordInput.value.trim();
+  page = 1;
+  showLoader();
+  if (!userKeyWord) {
+    maxPages = 0;
+    checkLoadBtnVisibility();
+    hideLoader();
+    refs.containerForImages.innerHTML = '';
+    showError('Empty field!', 'green', 'black', false);
+    return;
   }
-});
+  try {
+    const data = await imgPix(userKeyWord, page);
+    if (data.totalHits === 0) {
+      showError(
+        'Sorry, there are no images matching your search query. Please try again!',
+        'red',
+        'white',
+        icon
+      );
+    }
+    const img = data.hits;
+    maxPages = Math.ceil(data.totalHits / 20);
+    refs.containerForImages.innerHTML = '';
+    renderImages(img);
+    lightbox.refresh();
+  } catch (error) {
+    showError('Error occured! Please, try again! ', 'red', 'white', icon);
+    maxPages = 0;
+    refs.containerForImages.innerHTML = '';
+  } finally {
+    checkLoadBtnVisibility();
+  }
 
-refs.loadMoreBtnRef.addEventListener('click', () => {
-  refs.loaderRef.classList.remove('hide');
-  refs.loadMoreBtnRef.classList.add('hide');
-  curPage++;
+  hideLoader();
+  e.target.reset();
+}
 
-  getPhotoByKeyword(userValue)
-    .then(data => {
-      if (data.totalHits >= curPage * 15) {
-        refs.loadMoreBtnRef.classList.remove('hide');
-        refs.galleryRef.insertAdjacentHTML('beforeend', loadGallery(data));
-      } else {
-        iziToast.info({
-          message: "We're sorry, but you've reached the end of search results.",
-          position: 'topRight',
-        });
-      }
-      lightbox.refresh();
+async function loadMore() {
+  page += 1;
+  showLoader();
+  const data = await imgPix(userKeyWord, page);
+  renderImages(data.hits);
+  lightbox.refresh();
+  hideLoader();
+  checkLoadBtnVisibility();
+  if (page === maxPages) {
+    showError(
+      'We are sorry, but you have reached the end of search results.',
+      'lightblue',
+      'white',
+      false
+    );
+  }
 
-      const rect = document
-        .querySelector('.gallery-item')
-        .getBoundingClientRect();
-      window.scrollBy({
-        top: rect.height * 2,
-        behavior: 'smooth',
-      });
-    })
-    .catch(err =>
-      iziToast.error({
-        message: err.message,
-        position: 'topRight',
-        maxWidth: 432,
-      })
-    )
-    .finally(() => {
-      refs.loaderRef.classList.add('hide');
-    });
-});
+  const height =
+    refs.containerForImages.firstElementChild.getBoundingClientRect().height;
 
-refs.upBtnRef.addEventListener('click', () => {
-  window.scrollTo({
-    top: 0,
+  scrollBy({
     behavior: 'smooth',
+    top: height * 3,
   });
-});
+}
+
+function showLoadBtn() {
+  refs.loadMorePictures.classList.remove('hidden');
+}
+
+function removeLoadBtn() {
+  refs.loadMorePictures.classList.add('hidden');
+}
+
+function checkLoadBtnVisibility() {
+  if (page >= maxPages) {
+    removeLoadBtn();
+  } else {
+    showLoadBtn();
+  }
+}
+
+function showLoader() {
+  refs.loadDiv.classList.remove('hidden');
+}
+
+function hideLoader() {
+  refs.loadDiv.classList.add('hidden');
+}
+
+function showError(text, bgColor, txtColor, iconX) {
+  iziToast.error({
+    position: 'topRight',
+    iconUrl: iconX,
+    message: text,
+    messageColor: txtColor,
+    messageSize: '16',
+    messageLineHeight: '15',
+    backgroundColor: bgColor,
+    timeout: 5000,
+    displayMode: 2,
+    close: true,
+    closeOnEscape: true,
+    closeOnClick: true,
+  });
+}

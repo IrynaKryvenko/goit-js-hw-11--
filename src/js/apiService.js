@@ -1,21 +1,26 @@
+'user strict';
+
 import axios from 'axios';
-import { curPage } from '../main.js';
 
-export async function getPhotoByKeyword(query) {
-  const API_KEY = '42127236-8bfdbbfbeed8a2dadaca720e8';
-  const PARAMS = '/api/';
-  axios.defaults.baseURL = 'https://pixabay.com';
+export async function imgPix(query, currentPage) {
+  const BASE_URL = 'https://pixabay.com';
+  const END_POINT = '/api/?key=';
+  const API_KEY = '42433869-1e5be4b754d1019adc877ba0e';
 
-  const response = await axios.get(PARAMS, {
+  const url = `${BASE_URL}${END_POINT}${API_KEY}`;
+
+  const options = {
+    method: 'GET',
     params: {
-      key: API_KEY,
-      q: query,
       image_type: 'photo',
-      orientation: 'horisontal',
-      safesearch: true,
-      per_page: 15,
-      page: curPage,
+      orientation: 'horizontal',
+      safesearch: 'true',
+      per_page: '15',
+      page: currentPage,
+      q: query,
     },
-  });
-  return response.data;
+  };
+
+  const res = await axios.get(url, options);
+  return res.data;
 }
