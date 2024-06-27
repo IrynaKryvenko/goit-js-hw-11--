@@ -4,8 +4,8 @@ import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-import { getPhotoByKeyword } from './js/pixabay-api.js';
-import { loadGallery } from './js/render-functions.js';
+import { getPhotoByKeyword } from './js/apiService.js';
+import { loadGallery } from './js/renderPhotosList.js';
 
 export let curPage;
 
